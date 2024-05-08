@@ -87,7 +87,7 @@ startBot();
 
 
 async function Gemini(prompt) {
-    let resp;
+    
     const safetySettings = [
         { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" },
         { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
@@ -124,7 +124,7 @@ async function Gemini(prompt) {
         const candidates = data.candidates;
         if (candidates && candidates.length > 0) {
             const firstCandidate = candidates[0];
-            resp = firstCandidate.content.parts[0].text;
+            let resp = firstCandidate.content.parts[0].text;
             console.log('Google', resp);
         }
     } catch (error) {
