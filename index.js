@@ -27,7 +27,7 @@ async function startBot() {
      bot.command('start', (ctx) => ctx.reply('This bot is online.\n\nThis bot is having two ai Gpt and Gemini for using gpt use /gpt and for Gemini use /gemini\n\nNOTE: If bot gets erros then wait for some time and try again.\n'));
      
 
-     bot.command('gpt', async (ctx) => {
+    bot.command('gpt', async (ctx) => {
        const messageText = ctx.message.text;
        const commandAndArgs = messageText.split(' ');
        const command = commandAndArgs[0];
@@ -37,13 +37,25 @@ async function startBot() {
          return ctx.reply('Please send your prompt to the AI GPT.');
        } else {
          try {
-           const response = await fetch(`https://aemt.me/v2/gpt4?text=${encodeURIComponent(args.join(' '))}`);
+           let response = await fetch(`https://aemt.me/v2/gpt4?text=${encodeURIComponent(args.join(' '))}`);
            const data = await response.json();
 
-           if (data.status) {
+           if (response.status) {
              return ctx.reply(data.result);
            } else {
-             return ctx.reply('An error occurred while processing your request.');
+              let m = await fetch(`https://aemt.me/v2/turbo?text=${encodeURIComponent(args.join(' '))}`);
+              if(m.status){
+                const responseData = await m.json();
+                return ctx.reply(responseData.data);
+              }else{
+                let v = await fetch(`https://aemt.me/gpt4?text=${encodeURIComponent(args.join(' '))}`);
+                if(v.status){
+                  const responseData = await v.json();
+                  return ctx.reply(responseData.data);
+                }else{
+                  return ctx.reply(`Error try again..`);
+                }
+              }
            }
          } catch (error) {
            console.error('Error processing GPT request:', error);
@@ -51,6 +63,7 @@ async function startBot() {
          }
        }
      });
+
 
     bot.command('gemini',async (ctx) => {
        const messageText = ctx.message.text;
@@ -126,11 +139,13 @@ async function Gemini(prompt) {
             const firstCandidate = candidates[0];
             let resp = firstCandidate.content.parts[0].text;
             console.log('Google', resp);
+           return resp;
         }
     } catch (error) {
         console.error('Error:', error);
-        resp =  JSON.stringify(data)
+        let resp2 =  JSON.stringify(data)
+      return resp2
     }
 
-    return resp;
+    
 }
